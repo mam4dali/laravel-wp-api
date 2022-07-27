@@ -27,11 +27,24 @@ class WpApi
     protected $endpoint;
 
     /**
+     * WP-WPI endpoint Main URL
+     *
+     * @var string
+     */
+    protected $endpointMain;
+
+    /**
      * Auth headers
      *
      * @var mixed
      */
     protected $auth;
+    /**
+     * Auth Method
+     *  basic or bearer
+     * @var mixed
+     */
+    protected $authMethod = 'basic';
 
     /**
      * Constructor
@@ -49,8 +62,96 @@ class WpApi
         }
 
         $this->endpoint = $endpoint;
+        $this->endpointMain = explode('/wp-json', $this->endpoint)[0]. '/wp-json/';
         $this->client   = $client;
         $this->auth     = $auth;
+    }
+    /**
+     * Set And Enable Auth With JWT Token
+     * @param string $token
+     */
+    public function SetJwtToken($token)
+    {
+        $this->authMethod = 'jwt';
+        $this->auth = $token;
+    }
+
+    /**
+     * JWT Token Validate
+     *
+     * @param string $token
+     * @return array
+     */
+    public function jwtTokenValidate($token)
+    {
+        try {
+            $url =  $this->endpointMain. 'jwt-auth/v1/token/validate';
+            $response = $this->client->request('POST', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                    'Content-Type' => 'application/json'
+                ],
+            ]);
+            $body = json_decode($response->getBody()->getContents());
+            return [
+                'error'   => null,
+                'status' => ($body->code == 'jwt_auth_valid_token'),
+            ];
+        } catch (RequestException $e) {
+            return [
+                'error'   => $e->getMessage(),
+                'status' => false,
+            ];
+        }
+    }
+
+    /**
+     * JSON Web Token (JWT) Token Generate
+     *
+     * @param string $username
+     * @param string $password
+     * @return array
+     */
+    public function jwtTokenGenerate($username, $password){
+        try {
+            $url = $this->endpointMain . 'jwt-auth/v1/token';
+            $data = [
+                'username' => $username,
+                'password' => $password,
+            ];
+            $headers = [
+                'Content-Type' => 'application/json'
+            ];
+            $response = $this->client->request('POST', $url, [
+                'headers' => $headers,
+                'body' => json_encode($data),
+            ]);
+            $body = json_decode($response->getBody()->getContents());
+            if(empty($body->token))
+                throw new \Exception("Token is empty");
+            return [
+                'error'   => null,
+                'status' => true,
+                'token' => $body->token,
+            ];
+        } catch (RequestException $e) {
+            $error['message'] = $e->getMessage();
+
+            if ($e->getResponse()) {
+                $error['code'] = $e->getResponse()->getStatusCode();
+            }
+            return [
+                'error'   => $error,
+                'status' => false,
+                'token' => null,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error'   => $e->getMessage(),
+                'status' => false,
+                'token' => null,
+            ];
+        }
     }
 
     /**
@@ -205,7 +306,11 @@ class WpApi
             $params['query'] = $query;
 
             if ($this->auth) {
-                $params['auth'] = $this->auth;
+                if($this->authMethod == 'jwt'){
+                    $params['headers']['Authorization'] = 'Bearer ' . $this->auth;
+                } else {
+                    $params['auth'] = $this->auth;
+                }
             }
 
             $response = $this->client->get($this->endpoint . $method, $params);
