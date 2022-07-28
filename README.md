@@ -38,9 +38,9 @@ You will need to add the service provider and optionally the facade alias to you
   mam4dali\LaravelWpApi\ServiceProvider::class
 )
 
-'aliases' => array(
-  'WpApi' => mam4dali\LaravelWpApi\Facade::class
-),
+'aliases' => Facade::defaultAliases()->merge([
+        'WpApi' => mam4dali\LaravelWpApi\Facade::class,
+])->toArray(),
 ```
 
 And publish the package config files to configure the location of your Wordpress install:
