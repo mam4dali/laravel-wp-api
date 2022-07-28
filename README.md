@@ -2,14 +2,33 @@ This is a fork of threesquared/laravel-wp-api
 
 # laravel-wp-api
 
-Laravel 8 package for the [Wordpress JSON REST API](https://github.com/WP-API/WP-API)
+Laravel 9 package for the [Wordpress JSON REST API](https://github.com/WP-API/WP-API)
 
 ## Install
+First Add this to `composer.json` :
+```json
+"repositories": [{
+		"type":"package",
+		"package": {
+		  "name": "mam4dali/laravel-wp-api",
+		  "version":"master",
+		  "source": {
+			  "url": "https://github.com/mam4dali/laravel-wp-api.git",
+			  "type": "git",
+			  "reference":"master"
+			}
+		}
+	}],
+```
 
-Simply add the following line to your `composer.json` and run install/update:
-
-    "rk/laravel-wp-api": "^4.0"
-
+after that, add the following line to your `composer.json` and run install/update (OR RUN `composer require mam4dali/laravel-wp-api` ):
+    "mam4dali/laravel-wp-api": "master"
+Finally something like:
+```json
+"require": {
+        "mam4dali/laravel-wp-api": "master"
+    },
+```
 ## Configuration
 
 You will need to add the service provider and optionally the facade alias to your `config/app.php`:
@@ -29,71 +48,83 @@ And publish the package config files to configure the location of your Wordpress
     php artisan vendor:publish
 
 ### Usage
+You need to install the following plugin in WordPress:
+https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
+
+Example:
+```php
+$wp_api = new WpApi('http://localhost/wp/wp-json/wp/v2/', new \GuzzleHttp\Client(), null);
+$jwt_token = $wp_api->jwtTokenGenerate('username', 'password');
+$wp_api->SetJwtToken($jwt_token['token']);
+$get_post = $wp_api->postId(1);
+```
+**Important: No need to continuously generate tokens. Each token can work up to 7 days. you can save token for 7 days
+**
 
 The package provides a simplified interface to some of the existing api methods documented [here](http://wp-api.org/).
 You can either use the Facade provided or inject the `AstritZeqiri\LaravelWpApi\WpApi` class.
 
 #### Posts
 ```php
-WpApi::posts($page);
+$wp_api->posts($page);
 
 ```
 
 #### Pages
 ```php
-WpApi::pages($page);
+$wp_api->pages($page);
 
 ```
 
 #### Post
 ```php
-WpApi::post($slug);
+$wp_api->post($slug);
 
 ```
 
 ```php
-WpApi::postId($id);
+$wp_api->postId($id);
 
 ```
 
 #### Categories
 ```php
-WpApi::categories();
+$wp_api->categories();
 
 ```
 
 #### Tags
 ```php
-WpApi::tags();
+$wp_api->tags();
 
 ```
 
 #### Category posts
 ```php
-WpApi::categoryPosts($slug, $page);
+$wp_api->categoryPosts($slug, $page);
 
 ```
 
 #### Author posts
 ```php
-WpApi::authorPosts($slug, $page);
+$wp_api->authorPosts($slug, $page);
 
 ```
 
 #### Tag posts
 ```php
-WpApi::tagPosts($slug, $page);
+$wp_api->tagPosts($slug, $page);
 
 ```
 
 #### Search
 ```php
-WpApi::search($query, $page);
+$wp_api->search($query, $page);
 
 ```
 
 #### Archive
 ```php
-WpApi::archive($year, $month, $page);
+$wp_api->archive($year, $month, $page);
 
 ```
