@@ -268,15 +268,29 @@ class WpApi
     }
 
     /**
-     * Search posts
+     * Legacy Search posts
      *
      * @param string $query
      * @param int $page
      * @return array
      */
-    public function search(string $query, int $page = null)
+    public function filterPosts(string $query, int $page = 1, int $per_page = 10)
     {
-        return $this->get('posts', ['page' => $page, 'filter' => ['s' => $query]]);
+        return $this->get('posts', ['page' => $page, 'per_page' => $per_page, 'search' => $query]);
+    }
+
+    /**
+     * Search posts
+     *
+     * @param string $query
+     * @param int $page
+     * @param int $per_page
+     * @param string $type
+     * @return array [array results,int total, int pages]
+     */
+    public function search(string $query, int $page = 1, int $per_page = 10, string $type = 'post')
+    {
+        return $this->get('search', ['page' => $page, 'per_page' => $per_page, 'search' => $query, 'type' => $type]);
     }
 
     /**
