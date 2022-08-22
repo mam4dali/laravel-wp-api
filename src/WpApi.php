@@ -190,6 +190,18 @@ class WpApi
     }
 
     /**
+     * Get post by ids
+     *
+     * @param array $post_ids
+     * @param int $page
+     * @param int $per_page
+     * @return array
+     */
+    public function postIds(array $post_ids, int $page = 1, int $per_page = 10) : array{
+        return $this->get('posts', ['page' => $page, 'per_page' => $per_page, 'include' => implode(',', $post_ids) ]);
+    }
+
+    /**
      * Get post by slug
      *
      * @param string $slug
