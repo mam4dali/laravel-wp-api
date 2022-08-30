@@ -197,8 +197,8 @@ class WpApi
      * @param int $per_page
      * @return array
      */
-    public function postIds(array $post_ids, int $page = 1, int $per_page = 10) : array{
-        return $this->get('posts', ['page' => $page, 'per_page' => $per_page, 'include' => implode(',', $post_ids) ]);
+    public function postIds(array $post_ids) : array{
+        return $this->get('posts', ['include' => implode(',', $post_ids), 'orderby' => 'include']);
     }
 
     /**
