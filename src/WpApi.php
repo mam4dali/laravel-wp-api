@@ -171,11 +171,13 @@ class WpApi
      *
      * @param int $page
      * @param array $params
+     * @param array $query
+     * @param int $per_page
      * @return array
      */
-    public function pages(int $page = null, array $params = []): array
+    public function pages(int $page = 1, array $params = [], array $query = [], int $per_page = 10): array
     {
-        return $this->get('posts', ['type' => 'page', 'page' => $page], $params);
+        return $this->get('pages', array_merge(['per_page' => $per_page, 'page' => $page], $query), $params);
     }
 
     /**
