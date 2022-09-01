@@ -159,12 +159,13 @@ class WpApi
      *
      * @param int $page
      * @param array $params
+     * @param int $per_page
      * @param array $url_params
      * @return array
      */
-    public function posts(int $page = null, array $params = [], array $url_params = []): array
+    public function posts(int $page = null, array $params = [], int $per_page = 10, array $url_params = []): array
     {
-        return $this->get('posts', array_merge($url_params,['page' => $page]), $params);
+        return $this->get('posts', array_merge($url_params,['page' => $page, 'per_page' =>$per_page]), $params);
     }
 
     /**
