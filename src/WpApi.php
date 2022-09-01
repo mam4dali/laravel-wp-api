@@ -159,11 +159,12 @@ class WpApi
      *
      * @param int $page
      * @param array $params
+     * @param array $url_params
      * @return array
      */
-    public function posts(int $page = null, array $params = []): array
+    public function posts(int $page = null, array $params = [], array $url_params = []): array
     {
-        return $this->get('posts', ['page' => $page], $params);
+        return $this->get('posts', array_merge($url_params,['page' => $page]), $params);
     }
 
     /**
@@ -184,23 +185,23 @@ class WpApi
      * Get post by id
      *
      * @param int $id
+     * @param array $url_params
      * @return array
      */
-    public function postId(int $id): array
+    public function postId(int $id, array $url_params = []): array
     {
-        return $this->get("posts/$id");
+        return $this->get("posts/$id", $url_params);
     }
 
     /**
      * Get post by ids
      *
      * @param array $post_ids
-     * @param int $page
-     * @param int $per_page
+     * @param array $url_params
      * @return array
      */
-    public function postIds(array $post_ids) : array{
-        return $this->get('posts', ['include' => implode(',', $post_ids), 'orderby' => 'include']);
+    public function postIds(array $post_ids, array $url_params = []) : array{
+        return $this->get('posts', array_merge($url_params,['include' => implode(',', $post_ids), 'orderby' => 'include']));
     }
 
     /**
@@ -286,11 +287,12 @@ class WpApi
      *
      * @param string $query
      * @param int $page
+     * @param array $url_params
      * @return array
      */
-    public function filterPosts(string $query, int $page = 1, int $per_page = 10)
+    public function filterPosts(string $query, int $page = 1, int $per_page = 10, array $url_params = [])
     {
-        return $this->get('posts', ['page' => $page, 'per_page' => $per_page, 'search' => $query]);
+        return $this->get('posts', array_merge($url_params,['page' => $page, 'per_page' => $per_page, 'search' => $query]));
     }
 
     /**
