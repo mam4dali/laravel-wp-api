@@ -139,6 +139,7 @@ class WpApi
 
             if ($e->getResponse()) {
                 $error['code'] = $e->getResponse()->getStatusCode();
+                $error['content'] = $e->getResponse()->getBody()->getContents();
             }
             return [
                 'error'   => $error,
@@ -356,6 +357,7 @@ class WpApi
 
             if ($e->getResponse()) {
                 $error['code'] = $e->getResponse()->getStatusCode();
+                $error['content'] = $e->getResponse()->getBody()->getContents();
             }
 
             $return = [
